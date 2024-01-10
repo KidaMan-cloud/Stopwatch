@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="\fav.jpg" type="fav/png">
+    <title>Stopwatch</title>
+</head>
+<body>
+    <div class="background-container">
+        <img src="https://i.postimg.cc/SK7RvWWF/image.jpg" alt="Background" class="background-img">
+        <div class="stopwatch">
+            <div id="display" class="display">00:00:00</div>
+            <button class="button" onclick="startStop()">Start</button>
+            <button class="button" onclick="pause()">Pause</button>
+            <button class="button" onclick="reset()">Reset</button>
+            <button class="button" onclick="lap()">Lap</button>
+            <ul id="lapList" class="lap-list"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
