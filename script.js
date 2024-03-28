@@ -1,44 +1,55 @@
+const display = document.getElementById("display");
+let timer = null;
+let startTime = 0;
+let elapsedTime = 0;
 let isRunning = false;
-let startTime;
 let lapStartTime;
 let lapCount = 1;
-let interval;
 
-function startStop() {
-    const btn = document.querySelector('.button');
-    if (!isRunning) {
+function start(){
+    if(!isRunning){
+        startTime = Date.now() - elapsedTime;
+        timer = setInterval(update, 10);
         isRunning = true;
-        startTime = new Date().getTime() - (lapStartTime || 0);
-        lapStartTime = 0;
-        btn.textContent = 'Pause';
-        updateDisplay();
-        startInterval();
-    } else {
-        isRunning = false;
-        lapStartTime = new Date().getTime() - startTime;
-        btn.textContent = 'Resume';
-        clearInterval(interval);
     }
 }
 
-function pause() {
-    startStop(); // Reusing the logic of startStop function
+function stop(){
+    if(isRunning){
+        clearInterval(timer);
+        elapsedTime = Date.now() - startTime;
+        isRunning = false;
+    }
 }
 
-function reset() {
-    const btn = document.querySelector('.button');
-    isRunning = false;
+function reset(){
+    clearInterval(timer);
     startTime = 0;
-    lapStartTime = 0;
-    lapCount = 1;
-    btn.textContent = 'Start';
-    updateDisplay();
-    clearInterval(interval);
-    clearLapList();
+    elapsedTime = 0;
+    isRunning = false;    
+    display.textContent = "00:00:00:00";
+}
+
+function update(){
+    
+    const currentTime = Date.now();
+    elapsedTime = currentTime - startTime;
+
+    let hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+    let minutes = Math.floor(elapsedTime / (1000 * 60) % 60);
+    let seconds = Math.floor(elapsedTime / 1000 % 60);
+    let milliseconds = Math.floor(elapsedTime % 1000 / 10);
+
+    hours = String(hours).padStart(2, "0");
+    minutes = String(minutes).padStart(2, "0");
+    seconds = String(seconds).padStart(2, "0");
+    milliseconds = String(milliseconds).padStart(2, "0");
+
+    display.textContent = `${hours}:${minutes}:${seconds}:${milliseconds}`;
 }
 
 function lap() {
-    const btn = document.querySelector('.button');
+    const btn = document.querySelector('.lapbutton');
     if (isRunning) {
         const lapTime = new Date().getTime() - startTime;
         const lapItem = document.createElement('li');
@@ -50,37 +61,6 @@ function lap() {
         lapCount++;
     }
 }
-
-function updateDisplay() {
-    const currentTime = isRunning ? new Date().getTime() - startTime : lapStartTime;
-    document.getElementById('display').textContent = formatTime(currentTime);
-}
-
-function formatTime(time) {
-    const minutes = Math.floor(time / (60 * 1000));
-    const seconds = Math.floor((time % (60 * 1000)) / 1000);
-    const milliseconds = Math.floor((time % 1000) / 10);
-
-    return (
-        String(minutes).padStart(2, '0') +
-        ':' +
-        String(seconds).padStart(2, '0') +
-        ':' +
-        String(milliseconds).padStart(2, '0')
-    );
-}
-
-function startInterval() {
-    interval = setInterval(updateDisplay, 10);
-}
-
-function clearLapList() {
-    const lapList = document.getElementById('lapList');
-    while (lapList.firstChild) {
-        lapList.removeChild(lapList.firstChild);
-    }
-}
-
 function getLapColor(lapNumber) {
     switch (lapNumber % 3) {
         case 1:
@@ -91,5 +71,11 @@ function getLapColor(lapNumber) {
             return 'orange';
         default:
             return 'black';
+    }
+}
+function clearLapList() {
+    const lapList = document.getElementById('lapList');
+    while (lapList.firstChild) {
+        lapList.removeChild(lapList.firstChild);
     }
 }
